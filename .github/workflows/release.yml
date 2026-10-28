@@ -1,19 +1,42 @@
-name: Zip-Release4cpp
-  # You may pin to the exact commit or the version.
-  # uses: darshitsri/zip-release@1b834d476c94810a45eca807618beb94650feb75
-  uses: darshitsri/zip-release@v3
-  with:
-    # Filename for archive
-    filename: # default is release.zip
-    # Base path for archive files
-    path:  # optional, default is .
-    # Working directory before zipping
-    directory: # optional, default is .
-    # List of excluded files / directories
-    exclusions: # optional, default is 
-    # List of excluded files / directories with recursive wildcards (only applies on Windows with `zip` type)
-    recursive_exclusions: # optional, default is 
-    # Provide any custom parameters to the command
-    custom: # optional, default is 
-    # Tool to use for archiving
-    type: # optional, default is zip
+name: Release Mods Archive
+
+on:
+  push:
+    tags:
+      - 'v*'            # Запуск при создании тега версий (например, v1.0.0)
+  workflow_dispatch:    # Возможность запускать вручную через вкладку Actions
+
+permissions:
+  contents: write       # Необходимо для создания GitHub Release и загрузки файлов
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Собираем только .jar файлы в промежуточную папку mods/
+      - name: Prepare mods directory
+        run: |
+          mkdir -p staging/mods
+          # Ищет все .jar файлы в репозитории (или замените путь на конкретную папку, если они лежат отдельно)
+          find . -maxdepth 2 -type f -name "*.jar" -exec cp {} staging/mods/ \;
+
+      # Упаковываем папку mods в zip-архив с помощью darshitsri/zip-release
+      - name: Zip mods directory
+        uses: darshitsri/zip-release@v3
+        with:
+          filename: 'mods-bundle.zip'
+          directory: 'staging'
+          path: 'mods'
+          type: 'zip'
+
+      # Создаем релиз и прикрепляем собранный архив
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: Release ${{ github.ref_name }}
+          files: staging/mods-bundle.zip
+          generate_release_notes: true
