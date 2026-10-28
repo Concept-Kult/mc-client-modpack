@@ -24,14 +24,11 @@ jobs:
           # Ищет все .jar файлы в репозитории (или замените путь на конкретную папку, если они лежат отдельно)
           find . -maxdepth 2 -type f -name "*.jar" -exec cp {} staging/mods/ \;
 
-      # Упаковываем папку mods в zip-архив с помощью darshitsri/zip-release
+      # Упаковываем папку mods в zip-архив
       - name: Zip mods directory
-        uses: darshitsri/zip-release@v4
-        with:
-          filename: 'mods-bundle.zip'
-          directory: 'staging'
-          path: 'mods'
-          type: 'zip'
+        run: |
+          cd staging
+          zip -r mods-bundle.zip mods
 
       # Создаем релиз и прикрепляем собранный архив
       - name: Create GitHub Release
