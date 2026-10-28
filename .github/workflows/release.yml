@@ -6,7 +6,7 @@
     # Filename for archive
     filename: # default is release.zip
     # Base path for archive files
-    path: ./mods # optional, default is .
+    path:  # optional, default is .
     # Working directory before zipping
     directory: # optional, default is .
     # List of excluded files / directories
