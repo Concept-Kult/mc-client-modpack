@@ -26,7 +26,7 @@ jobs:
 
       # Упаковываем папку mods в zip-архив с помощью darshitsri/zip-release
       - name: Zip mods directory
-        uses: darshitsri/zip-release@v3
+        uses: darshitsri/zip-release@v4
         with:
           filename: 'mods-bundle.zip'
           directory: 'staging'
